@@ -47,9 +47,11 @@ db.serialize(() => {
 
 /* ------ 網頁路由（決定輸入什麼網址該開哪張網頁）------*/
 
-// 啟動伺服器，監聽 3000 連接埠 (Port)
-app.listen(3000, () => {
-    console.log('Server running');  // 成功啟動後在終端機列印出這行字
+// 讓伺服器優先使用雲端平台分配的 Port，如果沒有（例如在本機）就預設用 3000
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`伺服器成功啟動在連接埠：${PORT}`);
 });
 
 // 當瀏覽器輸入 http://localhost:3000/（首頁）
