@@ -112,17 +112,73 @@
         }
     </style>
 </head>
-<body>    
+<body>
     <div class="hero-banner" style="background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: #00f2fe;">
         <h1 style="color: #00f2fe; text-shadow: 0 0 10px rgba(0,242,254,0.5);">歡迎來到機械商城</h1>
         <p style="color: #fff; opacity: 0.8;">🔥 自動化核心元件、嵌入式系統感測器，現貨高效率供應 🔥</p>
     </div>
 
+    <a href="/cart" class="floating-cart-btn" title="查看採購車">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-text">檢視採購車</span>
+    </a>
+
+    <style>
+        .floating-cart-btn {
+            /* 👑 最核心關鍵：固定定位，不受滾輪捲動影響 */
+            position: fixed; 
+            bottom: 30px;       /* 距離視窗底部 30 像素 */
+            right: 30px;        /* 距離視窗右側 30 像素 */
+            
+            /* 賽博機械風視覺設計 */
+            background: linear-gradient(135deg, #fb8500, #ffb703);
+            color: #111;
+            text-decoration: none;
+            padding: 15px 22px;
+            border-radius: 50px; /* 讓兩端變圓弧狀 */
+            font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            
+            /* 陰影與圖層權重，確保它飄在所有商品的最上層 */
+            box-shadow: 0 8px 24px rgba(251, 133, 0, 0.3);
+            z-index: 9999; 
+            
+            /* 平滑的滑鼠懸停動畫 */
+            transition: all 0.3s ease;
+        }
+
+        /* 當滑鼠移上去時放大並增加霓虹光暈 */
+        .floating-cart-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(251, 133, 0, 0.5);
+            background: linear-gradient(135deg, #ffb703, #fb8500);
+        }
+
+        /* 購物車小圖示稍微放大 */
+        .cart-icon {
+            font-size: 20px;
+        }
+
+        /* RWD 手機板自動優化：在手機上把字藏起來，縮成一個乾淨的圓形按鈕 */
+        @media (max-width: 480px) {
+            .floating-cart-btn {
+                padding: 15px;
+                bottom: 20px;
+                right: 20px;
+                border-radius: 50%;
+            }
+            .cart-text {
+                display: none; /* 隱藏文字 */
+            }
+        }
+    </style>
 
     <div class="navbar">
         <div class="logo">商城</div>
         <div class="nav-links">
-            <a href="/cart">購物車</a>
             <a href="/orders">老闆後台</a>  </div>
     </div>
         <div class="product-grid" id="products-container"></div>
