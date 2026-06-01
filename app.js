@@ -22,14 +22,17 @@ db.serialize(() => {
             image TEXT                              -- 商品圖片路徑
         )
     `);
-    // 每次啟動伺服器時，自動塞入這兩筆預設的漢堡商品資料
-    db.run(`
-        INSERT INTO products (name, price, image)
-        VALUES 
-            ('高扭力伺服馬達 (MG996R)', 350, '/images/motor.jpg'),
-            ('微控制器開發板 (Type-C 介面)', 280, '/images/mcu.jpg'),
-            ('工業級超音波測距感測器', 420, '/images/sensor.jpg')
-    `);
+    // 塞入前先清空舊商品，防止重啟時重複疊加
+    db.run(`DELETE FROM products`, (err) => {
+        if (err) console.error(err);
+        
+        // 跑你的 INSERT 塞入商品
+        const stmt = db.prepare(`INSERT INTO products (name, price, image) VALUES (?, ?, ?)`);
+        stmt.run("高扭力伺服馬達 (MG996R)", 350, "your-image-path");
+        stmt.run("微控制器開發板 (Type-C 介面)", 280, "your-image-path");
+        stmt.run("工業級超音波測距感測器", 420, "your-image-path");
+        stmt.finalize();
+    });
     // 如果 orders (訂單) 資料表還不存在，就建立它
     db.run(`
         CREATE TABLE IF NOT EXISTS orders (
