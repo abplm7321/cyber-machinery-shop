@@ -119,50 +119,70 @@
     </div>
 
     <a href="/cart" class="floating-cart-btn" title="查看採購車">
-        <span class="cart-icon">🛒</span>
+        <div class="cart-icon-wrapper">
+            <span class="cart-icon">🛒</span>
+            <span id="cart-badge" class="cart-badge">0</span>
+        </div>
         <span class="cart-text">檢視採購車</span>
     </a>
 
     <style>
         .floating-cart-btn {
-            /* 👑 最核心關鍵：固定定位，不受滾輪捲動影響 */
             position: fixed; 
-            bottom: 30px;       /* 距離視窗底部 30 像素 */
-            right: 30px;        /* 距離視窗右側 30 像素 */
-            
-            /* 賽博機械風視覺設計 */
+            bottom: 30px;       
+            right: 30px;        
             background: linear-gradient(135deg, #fb8500, #ffb703);
             color: #111;
             text-decoration: none;
             padding: 15px 22px;
-            border-radius: 50px; /* 讓兩端變圓弧狀 */
+            border-radius: 50px; 
             font-weight: bold;
             font-size: 16px;
             display: flex;
             align-items: center;
             gap: 8px;
-            
-            /* 陰影與圖層權重，確保它飄在所有商品的最上層 */
             box-shadow: 0 8px 24px rgba(251, 133, 0, 0.3);
             z-index: 9999; 
-            
-            /* 平滑的滑鼠懸停動畫 */
             transition: all 0.3s ease;
         }
 
-        /* 當滑鼠移上去時放大並增加霓虹光暈 */
         .floating-cart-btn:hover {
             transform: translateY(-5px) scale(1.05);
             box-shadow: 0 12px 30px rgba(251, 133, 0, 0.5);
-            background: linear-gradient(135deg, #ffb703, #fb8500);
         }
 
-        /* 購物車小圖示稍微放大 */
+        /* 購物車圖示外殼：用來當作數字泡泡的定位基準點 */
+        .cart-icon-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
         .cart-icon {
             font-size: 20px;
         }
 
-        /* RWD 手機板自動優化：在手機上把字藏起來，縮成一個乾淨的圓形按鈕 */
+        /* 數字泡泡的樣式 */
+        .cart-badge {
+            position: absolute;
+            top: -8px;       /* 往上飄一點 */
+            right: -10px;    /* 往右飄一點 */
+            background-color: #e63946; /* 醒目的賽博警示紅 */
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 50%;
+            /* 保持正圓形的寬高秘訣 */
+            min-width: 18px;
+            height: 18px;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            /* 預設如果是 0 或者是空的就先隱藏，有數字再呈現 */
+            display: none; 
+        }
+
         @media (max-width: 480px) {
             .floating-cart-btn {
                 padding: 15px;
@@ -171,7 +191,7 @@
                 border-radius: 50%;
             }
             .cart-text {
-                display: none; /* 隱藏文字 */
+                display: none; 
             }
         }
     </style>
@@ -241,14 +261,35 @@
         }
 
         //【局部即時更新】計算目前購物車總共幾樣商品並改字
+        // 負責去讀取 localStorage 並即時刷新右下角泡泡數字的函式
         function updateCartBadge() {
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            // 用 reduce 加總所有品項的數量 (quantity)
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.getElementById('cart-badge');
+            // 從 localStorage 抓出購物車陣列，若沒有就給空陣列
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
             
-            // 精準修改導覽列上泡泡的數字
-            document.getElementById('cart-count-badge').innerText = totalItems;
+            // 計算購物車內所有零件的「總件數」（加總所有項目的 quantity）
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+            if (totalCount > 0) {
+                badge.innerText = totalCount;
+                badge.style.display = 'flex'; // 顯示泡泡
+            } else {
+                badge.style.display = 'none'; // 沒東西就隱藏
+            }
         }
+
+        // 1. 網頁一載入完成時，立刻計算一次數量
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartBadge();
+
+            // 2. 🚀 超重要優化：攔截你的「加入購物車」按鈕點擊事件！
+            // 只要畫面上的任何「加入購物車」按鈕被點擊，就延遲 0.1 秒自動刷新泡泡
+            document.body.addEventListener('click', function(e) {
+                if (e.target && e.target.classList.contains('add-to-cart-btn') || e.target.innerText.includes('加入購物車')) {
+                    setTimeout(updateCartBadge, 100);
+                }
+            });
+        });
 
         // 網頁初始化載入
         loadProducts();    // 撈取後端商品
