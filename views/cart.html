@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>購物車</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .cart-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .item-info {
+            flex: 2;
+        }
+        .item-name {
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .item-price {
+            color: #666;
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            justify-content: center;
+        }
+        .quantity-control button {
+            background: #eee;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .quantity-control button:hover {
+            background: #ddd;
+        }
+        .quantity-control span {
+            font-size: 16px;
+            font-weight: bold;
+            min-width: 20px;
+            text-align: center;
+        }
+        .item-subtotal {
+            flex: 1;
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+            color: #e63946;
+        }
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ff4d4d;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 20px;
+        }
+        .cart-summary {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-top: 20px;
+            text-align: right;
+        }
+        .order-form {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-top: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .submit-btn {
+            background: #ffb703;
+            color: #111;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            background: #fb8500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="logo">購物車明細</div>
+        <div>
+            <a href="/" style="color: white; text-decoration: none;">回前台首頁</a>
+        </div>
+    </div>
+
+    <div class="cart-container">
+        <h2>🛒 您的點購商品</h2>
+        
+        <div id="cart-container-list"></div>
+
+        <div class="cart-summary">
+            <span style="font-size: 18px; color: #666;">訂單總計：</span>
+            <span id="total-amount" style="font-size: 28px; font-weight: bold; color: #e63946;">$0</span>
+        </div>
+
+        <div class="order-form" id="order-form-block">
+            <h3>📝 填寫外送 / 自取資料</h3>
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label for="username">訂購人姓名</label>
+                    <input type="text" id="username" placeholder="請輸入您的姓名" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">聯絡電話</label>
+                    <input type="tel" id="phone" placeholder="請輸入手機號碼" required>
+                </div>
+                <div class="form-group">
+                    <label for="info">外送地址 / 自取時間說明</label>
+                    <textarea id="info" rows="3" placeholder="例如：自取請填寫預計取餐時間；外送請填寫完整地址與外送備註" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">🚀 確認資料，送出訂單</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 從瀏覽器的 localStorage 讀取購物車資料
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        // 1. 初始化渲染購物車
+        function renderCart() {
+            const cartContainer = document.getElementById('cart-container-list');
+            const formBlock = document.getElementById('order-form-block');
+            cartContainer.innerHTML = '';
+
+            if (cart.length === 0) {
+                cartContainer.innerHTML = `<div style="text-align:center; padding: 40px; color: #999; font-size: 18px;">購物車目前是空的喔</div>`;
+                formBlock.style.display = 'none'; // 沒商品就隱藏表單
+                updateTotal();
+                return;
+            }
+
+            formBlock.style.display = 'block'; // 有商品就秀出表單
+
+            cart.forEach((item, index) => {
+                const itemRow = document.createElement('div');
+                itemRow.className = 'cart-item';
+                itemRow.id = `cart-item-${index}`; // 精準定位列 ID
+
+                itemRow.innerHTML = `
+                    <div class="item-info">
+                        <span class="item-name">${item.name}</span>
+                        <span class="item-price">$${item.price} / 個</span>
+                    </div>
+                    
+                    <div class="quantity-control">
+                        <button type="button" onclick="changeQty(${index}, -1)">-</button>
+                        <span id="qty-${index}">${item.quantity}</span>
+                        <button type="button" onclick="changeQty(${index}, 1)">+</button>
+                    </div>
+                    
+                    <div class="item-subtotal" id="subtotal-${index}">$${item.price * item.quantity}</div>
+                    
+                    <button type="button" onclick="removeItem(${index})" class="delete-btn">🗑️ 刪除</button>
+                `;
+                cartContainer.appendChild(itemRow);
+            });
+
+            updateTotal(); // 計算總金額
+        }
+
+        //【局部更新 DOM】數量與個別小計調整（免重刷新網頁）
+        function changeQty(index, amount) {
+            cart[index].quantity += amount;
+
+            if (cart[index].quantity < 1) {
+                cart[index].quantity = 1;
+                return;
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            // 局部定位更新數字
+            const qtySpan = document.getElementById(`qty-${index}`);
+            const subtotalSpan = document.getElementById(`subtotal-${index}`);
+
+            if (qtySpan && subtotalSpan) {
+                qtySpan.innerText = cart[index].quantity;
+                subtotalSpan.innerText = `$${cart[index].price * cart[index].quantity}`;
+            }
+
+            updateTotal(); // 即時重新計算底部總計
+        }
+
+        //【局部更新 DOM】刪除商品品項（免重刷新網頁）
+        function removeItem(index) {
+                cart.splice(index, 1);
+                localStorage.setItem('cart', JSON.stringify(cart));
+
+                // 直接從網頁 DOM 節點中把這一列拔掉
+                const itemRow = document.getElementById(`cart-item-${index}`);
+                if (itemRow) {
+                    itemRow.remove(); 
+                }
+
+                if (cart.length === 0) {
+                    renderCart();
+                } else {
+                    updateTotal();
+                }
+            }
+
+        // 局部計算最新大計總金額
+        function updateTotal() {
+            const totalAmountEl = document.getElementById('total-amount');
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            if (totalAmountEl) {
+                totalAmountEl.innerText = `$${total}`;
+            }
+        }
+
+        // 監聽表單送出（點擊結帳按鈕），串接後端 API
+        document.getElementById('checkout-form').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // 包裝要傳給後端 /api/orders 的 JSON 資料
+            const orderData = {
+                name: document.getElementById('username').value,
+                phone: document.getElementById('phone').value,
+                info: document.getElementById('info').value,
+                items: cart, 
+                total: total 
+            };
+
+            // 透過 fetch 發送 POST 請求給 app.js 的 API
+            fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`🎉 訂單送出成功！您的訂單編號為: #${data.orderId}`);
+                    localStorage.removeItem('cart'); // 清除購物車暫存
+                    window.location.href = '/'; // 結帳成功引導回首頁
+                } else {
+                    alert('訂單送出失敗：' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('送出訂單時發生錯誤:', err);
+                alert('伺服器連線失敗，請稍後再試！');
+            });
+        });
+
+        // 網頁開啟時執行
+        renderCart();
+    </script>
+</body>
+</html>

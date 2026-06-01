@@ -1,0 +1,184 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+}
+
+/* 導覽列 */
+.navbar{
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #ffffff;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between; /* 讓 logo 在左，navbar-right 在最右 */
+    align-items: center;
+}
+
+.logo{
+    font-size: 28px;
+    font-weight: bold;
+    color: #00f2fe;
+}
+
+/* 控制導覽列右側的排版 */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* 購物車數量與查看按鈕之間的間距 */
+}
+
+.cart{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* 優化「查看購物車」的按鈕外觀 */
+.btn-go-cart {
+    background: #ffb703;
+    color: black !important; /* 強制覆蓋全域超連結顏色 */
+    text-decoration: none;
+    padding: 8px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.btn-go-cart:hover {
+    background: #fb8500;
+}
+
+/* 讓導覽列的超連結顏色跟文字一樣 */
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.navbar a:hover {
+    color: #ffb703;
+}
+
+.cart {
+    font-size: 20px;
+}
+
+/* 商品區 */
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    padding: 40px;
+}
+
+/* 商品卡片 */
+.card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.card h2 {
+    margin-bottom: 10px;
+}
+
+.price {
+    color: #e63946;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* --- 按鈕設定區 --- */
+
+/* 1. 首頁的「加入購物車」按鈕（建議寬度改為 100% 填滿卡片內容會比較好看） */
+.card-content button {
+    width: 100%; /* 讓它填滿卡片寬度，若堅持要原本的 10% 可以改回 10% */
+    padding: 12px;
+    border: none;
+    background: #ffb703;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.card-content button:hover {
+    background: #fb8500;
+}
+
+
+/* 2. 購物車頁面專用：加減數量按鈕 */
+.quantity-control button {
+    width: auto;         /* 覆蓋掉原本的寬度限制，改由內容決定 */
+    padding: 5px 12px;   /* 讓按鈕小巧一點 */
+    background: #e0e0e0;
+    color: #333;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.quantity-control button:hover {
+    background: #cccccc;
+}
+
+
+/* 3. 購物車頁面專用：獨立的「移除商品」按鈕格式 */
+.btn-delete {
+    width: auto;         /* 寬度自動，不會變成怪異的 10% */
+    padding: 8px 16px;   /* 舒適的按鈕大小 */
+    background-color: #ff4d4d; /* 警告紅色 */
+    color: white;        /* 白色文字 */
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 8px;  /* 圓角 */
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(255, 77, 77, 0.2);
+    transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+    background-color: #e60000; /* 懸停時變深紅 */
+    box-shadow: 0 4px 8px rgba(255, 77, 77, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn-delete:active {
+    transform: translateY(1px);
+}
+
+/* 4. 總金額標籤樣式 */
+#total {
+    grid-column: 1 / -1; /* 讓總金額在網格佈局中獨佔一行 */
+    text-align: right;   /* 靠右對齊 */
+    padding: 20px;
+    color: #111;
+}

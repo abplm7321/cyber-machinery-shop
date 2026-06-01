@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    
+    <title>工業級伺服馬達、微控制器開發板、自動化感測器現貨供應</title>
+    
+    <meta name="description" content="賽博機械提供最全面的自動化核心元件！包含高扭力伺服馬達、Type-C 微控制器開發板及工業級感測器。全站商品規格齊全、備貨充足，支援線上即時採購、開立統一編號發票與快速出貨服務。">
+    
+    <meta name="keywords" content="賽博機械, 電子零件商城, 伺服馬達, 微控制器, MCU開發板, 超音波感測器, 自動化元件, 工業零件採購">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta property="og:title" content="賽博機械商城 | 專業自動化元件與電子硬體採購平台">
+    <meta property="og:description" content="⚙️ 自動化核心元件、嵌入式系統感測器，現貨高效率供應！支援線上採購明細管理。">
+    <meta property="og:image" content="https://你的公開網址.com/images/mcu.jpg">
+    <meta property="og:type" content="website">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* 頁面基本佈局與樣式 */
+        .hero-banner {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #00f2fe;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        .hero-banner h1 {
+            margin: 0;
+            font-size: 36px;
+            font-weight: bold;
+            color: #00f2fe;
+            text-shadow: 0 0 10px rgba(0,242,254,0.5);
+        }
+        .hero-banner p {
+            margin: 10px 0 0 0;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        /* 商品卡片網格 */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #f5f5f5;
+        }
+        .product-info {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .product-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            color: #111;
+        }
+        .product-price {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e63946;
+            margin-bottom: 15px;
+        }
+        .add-btn {
+            background: #111;
+            color: #ffb703;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: auto;
+            transition: background 0.2s;
+        }
+        .add-btn:hover {
+            background: #222;
+            color: #fff;
+        }
+        /* 導覽列購物車泡泡 */
+        .cart-badge {
+            background: #e63946;
+            color: white;
+            font-size: 12px;
+            padding: 3px 7px;
+            border-radius: 50%;
+            position: relative;
+            top: -10px;
+            left: -5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>    
+    <div class="hero-banner" style="background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: #00f2fe;">
+        <h1 style="color: #00f2fe; text-shadow: 0 0 10px rgba(0,242,254,0.5);">歡迎來到機械商城</h1>
+        <p style="color: #fff; opacity: 0.8;">🔥 自動化核心元件、嵌入式系統感測器，現貨高效率供應 🔥</p>
+    </div>
+
+
+    <div class="navbar">
+        <div class="logo">機械電子商城</div>
+        <div>
+            <a href="/cart" style="color: white; text-decoration: none; font-weight: bold; margin-right: 20px;">
+                🛒 購物車明細 <span id="cart-count-badge" class="cart-badge">0</span>
+            </a>
+            <a href="/orders" style="color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px;">老闆後台</a>
+        </div>
+    </div>
+        <div class="product-grid" id="products-container"></div>
+    </div>
+
+    <script>
+        // 1. 網頁開啟時，向後端 API 撈取最新商品資料
+        function loadProducts() {
+            fetch('/api/products')
+                .then(res => res.json())
+                .then(products => {
+                    const container = document.getElementById('products-container');
+                    container.innerHTML = '';
+
+                    if (products.length === 0) {
+                        container.innerHTML = `<p style="color:#999; grid-column: 1/-1; text-align:center; padding:40px;">目前沒有任何上架商品資訊喔！</p>`;
+                        return;
+                    }
+
+                    // 走訪陣列，動態畫出卡片
+                    products.forEach(product => {
+                        const card = document.createElement('div');
+                        card.className = 'product-card';
+                        
+                        card.innerHTML = `
+                            <img src="${product.image}" alt="${product.name}" class="product-img" onerror="this.src='/images/default.jpg'">
+                            <div class="product-info">
+                                <h3 class="product-name">${product.name}</h3>
+                                <div class="product-price">$${product.price}</div>
+                                <button class="add-btn" onclick="addToCart('${product.name}', ${product.price})">➕ 加入購物車</button>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                })
+                .catch(err => {
+                    console.error('撈取商品失敗:', err);
+                });
+        }
+
+        //【全端與本地快取串接】點擊按鈕把商品存入本地快取
+        function addToCart(name, price) {
+            // 取出目前瀏覽器的購物車陣列，若沒有就建立空陣列
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            // 檢查購物車裡是不是已經點過這個商品了
+            const existingItem = cart.find(item => item.name === name);
+
+            if (existingItem) {
+                existingItem.quantity += 1; // 點過的話，數量直接 +1
+            } else {
+                cart.push({ name: name, price: price, quantity: 1 }); // 沒點過的話，新增品項
+            }
+
+            // 把更新後的購物車陣列存回快取
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            //【局部更新】立刻重新計算右上角的購物車總數量泡泡，不重整網頁！
+            updateCartBadge();
+        }
+
+        //【局部即時更新】計算目前購物車總共幾樣商品並改字
+        function updateCartBadge() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            // 用 reduce 加總所有品項的數量 (quantity)
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            // 精準修改導覽列上泡泡的數字
+            document.getElementById('cart-count-badge').innerText = totalItems;
+        }
+
+        // 網頁初始化載入
+        loadProducts();    // 撈取後端商品
+        updateCartBadge(); // 同步泡泡數字
+    </script>
+</body>
+</html>
