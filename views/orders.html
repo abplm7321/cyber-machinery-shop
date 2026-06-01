@@ -2,178 +2,156 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>拉絲漢堡 - 購物車</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂單管理系統</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        .cart-container {
-            max-width: 800px;
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+        }
+        .admin-container {
+            max-width: 1200px;
             margin: 40px auto;
             padding: 0 20px;
         }
-        .cart-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: white;
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        /* 頂部數據統計看板卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
-        .item-info {
-            flex: 2;
-        }
-        .item-name {
-            font-size: 18px;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-        .item-price {
-            color: #666;
-        }
-        .quantity-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            justify-content: center;
-        }
-        .quantity-control button {
-            background: #eee;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .quantity-control button:hover {
-            background: #ddd;
-        }
-        .quantity-control span {
-            font-size: 16px;
-            font-weight: bold;
-            min-width: 20px;
-            text-align: center;
-        }
-        .item-subtotal {
-            flex: 1;
-            text-align: right;
-            font-size: 18px;
-            font-weight: bold;
-            color: #e63946;
-        }
-        .delete-btn {
-            background: none;
-            border: none;
-            color: #ff4d4d;
-            cursor: pointer;
-            font-size: 16px;
-            margin-left: 20px;
-        }
-        .cart-summary {
+        .stat-card {
             background: white;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-top: 20px;
-            text-align: right;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-left: 5px solid #2c5364;
         }
-        .order-form {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-top: 30px;
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
+        .stat-card .value {
+            font-size: 24px;
             font-weight: bold;
-        }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        .submit-btn {
-            background: #ffb703;
             color: #111;
-            border: none;
-            padding: 12px 24px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
         }
-        .submit-btn:hover {
-            background: #fb8500;
+        /* 表格設計 */
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .order-table th, .order-table td {
+            padding: 15px 20px;
+            text-align: left;
+        }
+        .order-table th {
+            background-color: #2c5364;
+            color: white;
+            font-weight: 600;
+        }
+        .order-table tr {
+            border-bottom: 1px solid #eee;
+        }
+        .order-table tr:last-child {
+            border-bottom: none;
+        }
+        .order-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        .items-list {
+            margin: 0;
+            padding-left: 20px;
+            color: #555;
+            font-size: 14px;
+        }
+        .items-list li {
+            margin-bottom: 4px;
+        }
+        /* 頂部導覽列改為科技深色系 */
+        .navbar {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
         }
     </style>
 </head>
 <body>
 
     <div class="navbar">
-        <div class="logo">購物車明細</div>
+        <div class="logo">後台管理系統</div>
         <div>
-            <a href="/" style="color: white; text-decoration: none;">回前台首頁</a>
+            <a href="/" style="color: white; text-decoration: none; margin-right: 20px;">前往前端商城</a>
+            <a href="/admin" style="color: #00f2fe; text-decoration: none; font-weight: bold;">商品上架管理</a>
         </div>
     </div>
 
-    <div class="cart-container">
-        <h2>🛒 您的點購商品</h2>
+    <div class="admin-container">
+        <h2>📊 商城即時營運數據看板</h2>
         
-        <div id="cart-container-list"></div>
-
-        <div class="cart-summary">
-            <span style="font-size: 18px; color: #666;">訂單總計：</span>
-            <span id="total-amount" style="font-size: 28px; font-weight: bold; color: #e63946;">$0</span>
+        <div class="stats-grid">
+            <div class="stat-card" style="border-left-color: #00f2fe;">
+                <h3>📦 待處理採購單</h3>
+                <div class="value" id="count-pending">0 筆</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #2a9d8f;">
+                <h3>✅ 歷史已出貨</h3>
+                <div class="value" id="count-completed">0 筆</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #e63946;">
+                <h3>💰 商城總營業額</h3>
+                <div class="value" id="total-revenue">$0</div>
+            </div>
         </div>
 
-        <div class="order-form" id="order-form-block">
-            <h3>📝 填寫外送 / 自取資料</h3>
-            <form id="checkout-form">
-                <div class="form-group">
-                    <label for="username">訂購人姓名</label>
-                    <input type="text" id="username" placeholder="請輸入您的姓名" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">聯絡電話</label>
-                    <input type="tel" id="phone" placeholder="請輸入手機號碼" required>
-                </div>
-                <div class="form-group">
-                    <label for="info">外送地址 / 自取時間說明</label>
-                    <textarea id="info" rows="3" placeholder="例如：自取請填寫預計取餐時間；外送請填寫完整地址與外送備註" required></textarea>
-                </div>
-                <button type="submit" class="submit-btn">🚀 確認資料，送出訂單</button>
-            </form>
+        <hr style="border:0; border-top: 1px solid #ddd; margin: 40px 0;">
+
+        <h2>📋 採購訂單分類清單</h2>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px; margin-bottom: 20px;">
+            <button id="tab-pending" onclick="switchTab('處理中')" style="background: #2c5364; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">
+                ⏳ 待處理採購單
+            </button>
+            <button id="tab-completed" onclick="switchTab('已完成')" style="background: #ccc; color: #555; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.2s;">
+                ✅ 歷史已出貨
+            </button>
         </div>
+
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">單號</th>
+                    <th style="width: 160px;">採購時間</th>
+                    <th style="width: 180px;">客戶聯絡資訊</th>
+                    <th style="width: 200px;">收件地址 / 統一編號</th>
+                    <th>採購元件明細</th>
+                    <th style="width: 160px;">金額與出貨操作</th>
+                </tr>
+            </thead>
+            <tbody id="order-list-body">
+                </tbody>
+        </table>
     </div>
 
     <script>
-        // 從瀏覽器的 localStorage 讀取購物車資料
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        // 紀錄當前分頁狀態，預設進來只看「處理中（待出貨）」的訂單
+        let currentTab = '處理中'; 
 
-        // 新增：切換分頁按鈕的函式
+        // 分頁切換控制邏輯
         function switchTab(status) {
             currentTab = status;
             
-            // 抓取兩個按鈕元素
             const btnPending = document.getElementById('tab-pending');
             const btnCompleted = document.getElementById('tab-completed');
 
-            // 根據切換的狀態，動態改變按鈕的高亮顏色
             if (status === '處理中') {
-                btnPending.style.background = '#f4a261';
+                btnPending.style.background = '#2c5364';
                 btnPending.style.color = 'white';
                 btnCompleted.style.background = '#ccc';
                 btnCompleted.style.color = '#555';
@@ -184,55 +162,59 @@
                 btnCompleted.style.color = 'white';
             }
 
-            // 重新刷一次畫面
+            // 重新刷新表格資料
             loadOrders();
         }
 
-        // 載入並渲染所有訂單
+        // 向後端 API 撈取所有訂單，並負責「計算看板數據」與「篩選分頁」
         function loadOrders() {
             fetch('/api/orders')
                 .then(res => res.json())
                 .then(orders => {
+                    // --- 1. 計算頂部統計看板的數據 ---
+                    const pendingCount = orders.filter(o => o.status === '處理中').length;
+                    const completedCount = orders.filter(o => o.status === '已完成').length;
+                    const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+
+                    document.getElementById('count-pending').innerText = `${pendingCount} 筆`;
+                    document.getElementById('count-completed').innerText = `${completedCount} 筆`;
+                    document.getElementById('total-revenue').innerText = `$${totalRevenue}`;
+
+                    // --- 2. 根據當前分頁 (currentTab) 篩選出對應的訂單並渲染 ---
                     const tbody = document.getElementById('order-list-body');
                     tbody.innerHTML = "";
 
-                    // 🚀【核心分類邏輯】：根據目前 currentTab 的狀態，過濾出對應的訂單
                     const filteredOrders = orders.filter(order => order.status === currentTab);
 
-                    // 如果該分頁沒有任何訂單，呈現提示字
                     if (filteredOrders.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#999; padding:40px;">目前沒有【${currentTab}】的訂單喔！</td></tr>`;
+                        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#999; padding:50px; font-size:16px;">目前沒有【${currentTab === '處理中' ? '待處理' : '已出貨'}】的採購單喔！</td></tr>`;
                         return;
                     }
 
-                    // 改用過濾後的陣列 (filteredOrders) 進行畫面渲染
                     filteredOrders.forEach(order => {
-                        // 解開存入時被轉成字串的購物車商品陣列
                         const items = JSON.parse(order.items);
-                        
                         let itemsHtml = '<ul class="items-list">';
                         items.forEach(item => {
-                            itemsHtml += `<li> ${item.name} x ${item.quantity} ($${item.price * item.quantity})</li>`;
+                            itemsHtml += `<li>⚙️ <strong>${item.name}</strong> x ${item.quantity} ($${item.price * item.quantity})</li>`;
                         });
                         itemsHtml += '</ul>';
 
-                        // 格式化時間，呈現符合台灣習慣的格式
                         const orderTime = new Date(order.created_at).toLocaleString('zh-TW');
 
-                        // 根據訂單狀態，決定要顯示什麼標籤與按鈕
+                        // 依據出貨狀態動態給予不同顏色標籤與按鈕功能
                         let statusHtml = "";
                         if (order.status === '已完成') {
-                            statusHtml = `<span style="display: inline-block; margin-top: 5px; color: #2a9d8f; font-weight: bold;">🟢 已完成</span>`;
+                            statusHtml = `<span style="display: inline-block; color: #2a9d8f; font-weight: bold; margin-bottom:5px;">🟢 已出貨/已建檔</span>`;
                         } else {
                             statusHtml = `
-                                <span style="display: inline-block; margin-top: 5px; color: #f4a261; font-weight: bold;">🟠 處理中</span>
-                                <button onclick="completeOrder(${order.id})" style="display: block; margin-top: 8px; background: #2a9d8f; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;">
-                                    ✅ 完成訂單
+                                <span style="display: inline-block; color: #f4a261; font-weight: bold; margin-bottom:5px;">🟠 待配庫出貨</span>
+                                <button onclick="completeOrder(${order.id})" style="display: block; margin-top: 5px; background: #2a9d8f; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; width: 100%; font-weight:bold;">
+                                    📦 確認出貨
                                 </button>
                             `;
                         }
 
-                        // 額外加上：不論狀態如何，老闆都可以點擊的紅色的「刪除紀錄」按鈕
+                        // 刪除紀錄按鈕
                         statusHtml += `
                             <button onclick="deleteOrder(${order.id})" style="display: block; margin-top: 8px; background: #ff4d4d; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; width: 100%;">
                                 🗑️ 刪除紀錄
@@ -242,12 +224,12 @@
                         tbody.innerHTML += `
                             <tr>
                                 <td><strong>#${order.id}</strong></td>
-                                <td style="font-size: 14px; color: #666;">${orderTime}</td>
+                                <td style="font-size: 13px; color: #666;">${orderTime}</td>
                                 <td>
                                     <strong>${order.name}</strong><br>
-                                    <span style="font-size:14px; color:#666;">📞 ${order.phone}</span>
+                                    <span style="font-size:13px; color:#666;">📞 ${order.phone}</span>
                                 </td>
-                                <td>${order.info}</td>
+                                <td style="font-size: 14px; color: #444; word-break: break-all;">${order.info}</td>
                                 <td>${itemsHtml}</td>
                                 <td>
                                     <div style="color:#e63946; font-size:18px; font-weight:bold; margin-bottom: 5px;">$${order.total}</div>
@@ -258,22 +240,20 @@
                         `;
                     });
                 })
-                .catch(err => {
-                    console.error("撈取訂單失敗:", err);
-                });
+                .catch(err => console.error("撈取訂單失敗:", err));
         }
 
-        // 點擊按鈕後將訂單改為已完成
+        // 將訂單改為已完成（出貨）
         function completeOrder(id) {
-            if (confirm(`確定要將訂單 #${id} 標記為已完成嗎？`)) {
+            if (confirm(`確定要將採購單 #${id} 標記為已出貨嗎？`)) {
                 fetch(`/api/orders/${id}/complete`, {
                     method: 'POST'
                 })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        alert(data.message);
-                        loadOrders(); // 重新載入，該筆訂單會自動從「待處理」消失，跑到「歷史已完成」去！
+                        alert("🎉 商品出庫成功！已自動移至歷史紀錄。");
+                        loadOrders(); // 局部刷新
                     } else {
                         alert("錯誤：" + data.message);
                     }
@@ -282,17 +262,17 @@
             }
         }
 
-        // 點擊按鈕後刪除訂單
+        // 刪除訂單紀錄
         function deleteOrder(id) {
-            if (confirm(`⚠️ 警告：確定要永久刪除訂單 #${id} 嗎？`)) {
+            if (confirm(`⚠️ 警告：確定要永久刪除採購單 #${id} 的紀錄嗎？(不可逆)`)) {
                 fetch(`/api/orders/${id}`, {
                     method: 'DELETE'
                 })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        alert(data.message);
-                        loadOrders(); 
+                        alert("紀錄已成功清除！");
+                        loadOrders(); // 局部刷新
                     } else {
                         alert("錯誤：" + data.message);
                     }
@@ -301,8 +281,8 @@
             }
         }
 
-        // 網頁開啟時執行
-        renderCart();
+        // 初始化載入
+        loadOrders();
     </script>
 </body>
 </html>
