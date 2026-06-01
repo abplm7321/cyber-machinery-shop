@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>購物車</title>
+    <title>拉絲漢堡 - 購物車</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
         .cart-container {
@@ -170,7 +170,7 @@
             cartContainer.innerHTML = '';
 
             if (cart.length === 0) {
-                cartContainer.innerHTML = `<div style="text-align:center; padding: 40px; color: #999; font-size: 18px;">購物車目前是空的喔</div>`;
+                cartContainer.innerHTML = `<div style="text-align:center; padding: 40px; color: #999; font-size: 18px;">您的購物車目前是空的喔</div>`;
                 formBlock.style.display = 'none'; // 沒商品就隱藏表單
                 updateTotal();
                 return;
@@ -205,7 +205,7 @@
             updateTotal(); // 計算總金額
         }
 
-        //【局部更新 DOM】數量與個別小計調整（免重刷新網頁）
+        // 2. ✨【局部更新 DOM】數量與個別小計調整（免重刷新網頁）
         function changeQty(index, amount) {
             cart[index].quantity += amount;
 
@@ -228,10 +228,10 @@
             updateTotal(); // 即時重新計算底部總計
         }
 
-        //【局部更新 DOM】刪除商品品項（免重刷新網頁）
+        // 3. ✨【局部更新 DOM】刪除商品品項（免重刷新網頁）
         function removeItem(index) {
-                cart.splice(index, 1);
-                localStorage.setItem('cart', JSON.stringify(cart));
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
 
                 // 直接從網頁 DOM 節點中把這一列拔掉
                 const itemRow = document.getElementById(`cart-item-${index}`);
@@ -245,8 +245,9 @@
                     updateTotal();
                 }
             }
+        
 
-        // 局部計算最新大計總金額
+        // 4. ✨ 局部計算最新大計總金額
         function updateTotal() {
             const totalAmountEl = document.getElementById('total-amount');
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -256,7 +257,7 @@
             }
         }
 
-        // 監聽表單送出（點擊結帳按鈕），串接後端 API
+        // 5. 監聽表單送出（點擊結帳按鈕），串接後端 API
         document.getElementById('checkout-form').addEventListener('submit', function(e) {
             e.preventDefault(); 
 

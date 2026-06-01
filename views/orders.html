@@ -123,6 +123,8 @@
         }
 
         // 載入並渲染所有訂單
+        
+        // 載入並渲染所有訂單
         function loadOrders() {
             fetch('/api/orders')
                 .then(res => res.json())
@@ -130,17 +132,29 @@
                     const tbody = document.getElementById('order-list-body');
                     tbody.innerHTML = "";
 
-                    // 🚀【核心分類邏輯】：根據目前 currentTab 的狀態，過濾出對應的訂單
-                    const filteredOrders = orders.filter(order => order.status === currentTab);
+                    // ✨【核心計算邏輯】初始化統計變數
+                    let totalMoney = 0;
+                    let pendingCount = 0;
+                    let completedCount = 0;
 
-                    // 如果該分頁沒有任何訂單，呈現提示字
-                    if (filteredOrders.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#999; padding:40px;">目前沒有【${currentTab}】的訂單喔！</td></tr>`;
+                    if (orders.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#999; padding:40px;">目前還沒有任何訂單喔！</td></tr>`;
+                        // 如果沒訂單，數據歸零
+                        document.getElementById('stat-total-money').innerText = `$0`;
+                        document.getElementById('stat-pending-count').innerText = `0 筆`;
+                        document.getElementById('stat-completed-count').innerText = `0 筆`;
                         return;
                     }
 
-                    // 改用過濾後的陣列 (filteredOrders) 進行畫面渲染
-                    filteredOrders.forEach(order => {
+                    orders.forEach(order => {
+                        // ✨【核心計算邏輯】累加營業額與統計狀態
+                        totalMoney += order.total;
+                        if (order.status === '已完成') {
+                            completedCount++;
+                        } else {
+                            pendingCount++;
+                        }
+
                         // 解開存入時被轉成字串的購物車商品陣列
                         const items = JSON.parse(order.items);
                         
@@ -191,6 +205,11 @@
                             </tr>
                         `;
                     });
+
+                    // ✨【核心計算邏輯】將計算好的數據即時渲染到上方的數字卡片中
+                    document.getElementById('stat-total-money').innerText = `$${totalMoney}`;
+                    document.getElementById('stat-pending-count').innerText = `${pendingCount} 筆`;
+                    document.getElementById('stat-completed-count').innerText = `${completedCount} 筆`;
                 })
                 .catch(err => {
                     console.error("撈取訂單失敗:", err);
